@@ -26,7 +26,9 @@ class Settings(BaseSettings):
     twilio_auth_token: str = ""
     twilio_from_number: str = ""
 
-    allowed_origins: str = "http://localhost:5173,http://localhost:3000"
+    allowed_origins: str = "http://localhost:5173,http://localhost:3000,https://knowledge-bridge-three.vercel.app"
+    # Vercel preview deployments of this project get a fresh subdomain per build
+    allowed_origin_regex: str = r"https://knowledge-bridge-[a-z0-9-]+\.vercel\.app"
 
     sponsorship_ops_fee_pct: int = 12
 
@@ -35,7 +37,10 @@ class Settings(BaseSettings):
 
     @property
     def origins_list(self) -> list[str]:
-        return [o.strip() for o in self.allowed_origins.split(",")]
+        # Browsers send Origin without a trailing slash, so "https://x.app/" would never match
+        origins = {o.strip().rstrip("/") for o in self.allowed_origins.split(",") if o.strip()}
+        origins.add("https://knowledge-bridge-three.vercel.app")
+        return sorted(origins)
 
     class Config:
         env_file = ".env"
