@@ -480,7 +480,7 @@ export default function AIChat() {
             </div>
           )}
 
-          {/* Messages — all left-aligned */}
+          {/* Messages — user on the left, AI on the right */}
           {messages.map(m => (
             <div key={m.id} style={{ marginBottom: m.role === "user" ? 6 : 18 }}>
               {m.role === "user" ? (
@@ -511,8 +511,9 @@ export default function AIChat() {
                   </div>
                 </div>
               ) : (
-                /* Assistant reply — full-width card */
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                /* Assistant reply — right-aligned card */
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ display: "flex", flexDirection: "row-reverse", alignItems: "flex-start", gap: 10, maxWidth: "82%", minWidth: 0 }}>
                   <div style={{
                     width: 28, height: 28, borderRadius: 8, flexShrink: 0,
                     background: `linear-gradient(135deg, ${C.blue}, ${C.accent})`,
@@ -540,7 +541,7 @@ export default function AIChat() {
                       background: "rgba(255,255,255,0.78)",
                       backdropFilter: "blur(12px)",
                       WebkitBackdropFilter: "blur(12px)",
-                      borderRadius: "4px 14px 14px 14px",
+                      borderRadius: "14px 4px 14px 14px",
                       border: "1px solid rgba(31,99,214,0.10)",
                       boxShadow: "0 2px 16px rgba(31,99,214,0.08)",
                       padding: "14px 18px",
@@ -550,13 +551,14 @@ export default function AIChat() {
                     </div>
                   </div>
                 </div>
+                </div>
               )}
             </div>
           ))}
 
           {/* Typing indicator */}
           {loading && (
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 18 }}>
+            <div style={{ display: "flex", flexDirection: "row-reverse", alignItems: "flex-start", gap: 10, marginBottom: 18 }}>
               <div style={{
                 width: 28, height: 28, borderRadius: 8, flexShrink: 0,
                 background: `linear-gradient(135deg, ${C.blue}, ${C.accent})`,
@@ -568,7 +570,7 @@ export default function AIChat() {
               <div style={{
                 background: "rgba(255,255,255,0.78)",
                 backdropFilter: "blur(12px)",
-                borderRadius: "4px 14px 14px 14px",
+                borderRadius: "14px 4px 14px 14px",
                 border: "1px solid rgba(31,99,214,0.10)",
                 padding: "12px 16px",
                 display: "flex", gap: 5, alignItems: "center",
