@@ -4,7 +4,8 @@ const BASE = import.meta.env.VITE_API_BASE_URL || "";
 
 const api = axios.create({
   baseURL: BASE,
-  timeout: 15000,
+  // Render's free tier needs up to ~60s to wake from sleep
+  timeout: 90000,
 });
 
 // Attach JWT from localStorage
@@ -99,6 +100,8 @@ export const rejectPickup = (id, reason) => api.post(`/api/kabadiwalas/pickups/$
 
 // --- Certificates ---
 export const getCertificate = (type, refId) => api.get(`/api/certificates/${type}/${refId}`);
+
+export const pingServer = () => api.get("/api/health");
 
 // --- AI Chat ---
 export const chatAPI = {

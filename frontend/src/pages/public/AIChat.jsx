@@ -4,9 +4,9 @@ import {
   Sparkles, Plus, Trash2, Send, Copy, Check,
   BookOpen, ChevronLeft, MessageSquare, Menu,
   Package, GraduationCap, BookMarked,
-  ShoppingBag, BarChart2, Heart, User,
+  ShoppingBag, BarChart2, Heart, User, Loader2,
 } from "lucide-react";
-import { chatAPI } from "../../lib/api";
+import { chatAPI, pingServer } from "../../lib/api";
 import { C } from "../../lib/theme";
 
 const PROMPTS = [
@@ -103,6 +103,7 @@ export default function AIChat() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [serverWaking, setServerWaking] = useState(false);
   const scrollRef = useRef(null);
   const textareaRef = useRef(null);
   const vantaRef = useRef(null);
@@ -139,7 +140,22 @@ export default function AIChat() {
     return () => { clearTimeout(timer); if (vantaEffect) vantaEffect.destroy(); };
   }, []);
 
-  useEffect(() => { loadSessions(); }, []);
+  // Wake the backend; only show the banner if it doesn't answer quickly
+  useEffect(() => {
+    let cancelled = false;
+    const slowTimer = setTimeout(() => { if (!cancelled) setServerWaking(true); }, 3000);
+    (async () => {
+      for (let i = 0; i < 20 && !cancelled; i++) {
+        try { await pingServer(); break; }
+        catch { await new Promise(r => setTimeout(r, 3000)); }
+      }
+      if (cancelled) return;
+      clearTimeout(slowTimer);
+      setServerWaking(false);
+      loadSessions();
+    })();
+    return () => { cancelled = true; clearTimeout(slowTimer); };
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current)
@@ -437,6 +453,17 @@ export default function AIChat() {
           </span>
         </div>
 
+        {serverWaking && (
+          <div role="status" style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+            padding: "9px 16px", fontSize: 13, fontWeight: 600, color: "#8a5a00",
+            background: "rgba(255,244,214,0.95)", borderBottom: "1px solid rgba(214,150,0,0.25)",
+          }}>
+            <Loader2 size={15} style={{ animation: "kbSpin 1s linear infinite", flexShrink: 0 }} />
+            <span>Server is starting up — this can take up to a minute the first time. Your chat will work as soon as it's ready.</span>
+          </div>
+        )}
+
         {/* Messages scroll */}
         <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: hasMessages ? "24px 28px 12px" : "0" }}>
 
@@ -642,6 +669,7 @@ export default function AIChat() {
           0%, 100% { transform: translateY(0); opacity: 0.4; }
           50% { transform: translateY(-5px); opacity: 1; }
         }
+        @keyframes kbSpin { to { transform: rotate(360deg); } }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: rgba(31,99,214,0.20); border-radius: 4px; }
       `}</style>
