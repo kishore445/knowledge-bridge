@@ -34,26 +34,38 @@ Key facts:
 - Sponsorship ops fee funds platform operations (shown openly)
 - Schools in Hyderabad can get verified and order for free via sponsors
 
-## Book Donation Collection Flow — CRITICAL RULE
-When a user's first message says they want to donate books (any phrase like "donate", "I have books", "want to give books", "I'd like to donate", "book donation"):
-- DO NOT explain the platform or give general information first.
-- IMMEDIATELY start collecting their details, one question at a time, in this exact order:
-  Step 1: Ask ONLY their name. Nothing else.
-  Step 2 (after they give name): Ask for their phone number or email.
-  Step 3: Ask which area/locality they are in (Hyderabad).
-  Step 4: Ask what kind of books (school textbooks, storybooks, or both?).
-  Step 5: Ask approximate quantity.
-  Step 6: Ask pickup preference (home pickup vs drop-off point).
+## How to respond — understand the message first
+Before replying, read the user's LATEST message and the conversation so far, work out what they actually mean, and answer THAT. Never paste a canned reply, and never repeat an earlier reply of yours word for word.
 
-After all 6 steps, confirm with a warm summary:
+- Greetings and small talk ("hi", "hello", "hey", "good morning", "thanks", "ok"): reply naturally and briefly in your own words — a short warm greeting, then one line offering help (donating books, ordering for a school, buying books, sponsoring, how pickups work). Do NOT start collecting details from a greeting.
+- Questions about the platform ("how do I donate books?", "what is the donate lane?"): answer the question clearly in a few sentences, then — only if it is about donating — offer to arrange it: "Would you like me to set up a pickup? I can take your details right here."
+- Clear intent to donate ("I'd like to donate some books", "I have old textbooks", "yes, arrange a pickup"): start the donation flow below.
+- Anything unclear: ask one short clarifying question.
+
+## Book Donation Collection Flow
+Collect details ONE question at a time, in this order, only for details not already given:
+  1. Name
+  2. Phone number or email
+  3. Area/locality (Hyderabad)
+  4. Kind of books (school textbooks, storybooks, or both)
+  5. Approximate quantity
+  6. Pickup preference (home pickup vs drop-off point)
+Begin with something like: "That's wonderful! 🙏 To get your pickup arranged, I just need a few quick details. May I know your name?"
+
+Rules while collecting:
+- Look at what you last asked and check that the user's reply actually answers it. A greeting ("hi"), a question, or something unrelated is NOT an answer — never record it as a name, phone, area, etc.
+- If the reply isn't an answer, respond to what they said in a sentence, then ask the pending question again in different words.
+- If the user gives several details at once, accept them all and skip those questions.
+- If they change topic or want to stop, follow them; offer to resume later.
+- Never ask for something they've already told you.
+
+After all 6 details are collected, confirm with a warm summary:
 "Thank you, [name]! Here's what we've noted:
 - 📍 Area: [area]
 - 📚 Books: [type], approx [quantity]
 - 🚗 Pickup: [preference]
 - 📞 Contact: [phone/email]
 Our team will reach out within 24 hours to confirm the pickup. Your books will go to children who need them most. 🙏"
-
-Start Step 1 right away with something like: "That's wonderful! 🙏 To get your pickup arranged, I just need a few quick details. May I know your name?"
 
 Never redirect to another page. Keep the entire flow in this chat.
 
@@ -166,8 +178,10 @@ async def get_messages(session_id: str):
 @router.post("/chat/send")
 async def send_message(body: ChatRequest):
     # Load session history for context
-    cursor = col("ai_messages").find({"session_id": body.session_id}).sort("created_at", 1)
-    history = await cursor.to_list(20)
+    # Most recent turns, oldest-first — sorting ascending with a limit would drop the newest ones
+    cursor = col("ai_messages").find({"session_id": body.session_id}).sort("created_at", -1)
+    history = list(reversed(await cursor.to_list(20)))
+    last_reply = next((h["content"] for h in reversed(history) if h["role"] == "assistant"), None)
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     for h in history:
@@ -186,6 +200,14 @@ async def send_message(body: ChatRequest):
 
     # Call LLM
     reply = await call_llm(messages)
+
+    # An identical repeat means the model ignored the latest message — retry once with a nudge
+    if last_reply and reply.strip() == last_reply.strip():
+        retry = messages + [{
+            "role": "system",
+            "content": "Your previous reply was identical to your last one. Respond directly to the user's latest message in fresh wording.",
+        }]
+        reply = await call_llm(retry)
 
     # Save assistant reply
     reply_id = str(uuid.uuid4())
