@@ -30,6 +30,9 @@ class Settings(BaseSettings):
 
     sponsorship_ops_fee_pct: int = 12
 
+    groq_api_key: str = ""
+    openrouter_api_key: str = ""
+
     @property
     def origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",")]

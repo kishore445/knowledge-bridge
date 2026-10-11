@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BookOpen, Menu, X, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+import { BookOpen, Menu, X, ChevronDown, LogOut, LayoutDashboard, Sparkles } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import t from "../i18n/en";
 
@@ -42,6 +42,10 @@ export default function Navbar() {
           <NavLink to="/browse">{t.nav_browse}</NavLink>
           <NavLink to="/impact">{t.nav_impact}</NavLink>
           <NavLink to="/sponsor">{t.nav_sponsor}</NavLink>
+          <Link to="/chat" className="px-3 py-2 rounded-lg text-sm font-medium text-white bg-primary hover:opacity-90 transition-opacity flex items-center gap-1.5">
+            <Sparkles size={14} />
+            AI Chat
+          </Link>
         </div>
 
         {/* Desktop auth */}
@@ -80,6 +84,7 @@ export default function Navbar() {
           <MobileLink to="/browse" onClick={() => setMobileOpen(false)}>{t.nav_browse}</MobileLink>
           <MobileLink to="/impact" onClick={() => setMobileOpen(false)}>{t.nav_impact}</MobileLink>
           <MobileLink to="/sponsor" onClick={() => setMobileOpen(false)}>{t.nav_sponsor}</MobileLink>
+          <MobileLink to="/chat" onClick={() => setMobileOpen(false)}>AI Chat</MobileLink>
           {isLoggedIn ? (
             <>
               <MobileLink to={dashboardPath} onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>

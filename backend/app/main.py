@@ -7,6 +7,7 @@ from .config import get_settings
 from .database import close_connection
 from .routes import auth, schools, kabadiwalas, inventory, orders
 from .routes import sponsorships, resale, deliveries, donors, impact, admin, certificates
+from .routes import ai_chat
 
 
 @asynccontextmanager
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
     app.include_router(impact.router, prefix="/api")
     app.include_router(admin.router, prefix="/api")
     app.include_router(certificates.router, prefix="/api")
+    app.include_router(ai_chat.router, prefix="/api")
 
     @app.get("/api/health")
     async def health():

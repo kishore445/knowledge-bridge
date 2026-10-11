@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, Truck, CheckCircle, ArrowRight, Heart, ShoppingBag, Star } from "lucide-react";
 import Layout from "../../components/Layout";

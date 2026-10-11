@@ -37,17 +37,22 @@ import Disputes from "./pages/admin/Disputes";
 // Sponsor
 import SponsorDashboard from "./pages/sponsor/SponsorDashboard";
 
+// AI Chat
+import AIChat from "./pages/public/AIChat";
+
 export default function App() {
   return (
     <AuthProvider>
       <Routes>
         {/* Public */}
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<AIChat />} />
+        <Route path="/home" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/browse" element={<BrowseBooks />} />
         <Route path="/impact" element={<ImpactDashboard />} />
         <Route path="/sponsor" element={<SponsorCheckout />} />
         <Route path="/sponsor/dashboard" element={<SponsorDashboard />} />
+        <Route path="/chat" element={<AIChat />} />
 
         {/* Donor */}
         <Route path="/donor" element={<MyListings />} />

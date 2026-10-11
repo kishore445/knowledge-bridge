@@ -99,3 +99,12 @@ export const rejectPickup = (id, reason) => api.post(`/api/kabadiwalas/pickups/$
 
 // --- Certificates ---
 export const getCertificate = (type, refId) => api.get(`/api/certificates/${type}/${refId}`);
+
+// --- AI Chat ---
+export const chatAPI = {
+  createSession: () => api.post("/api/ai/chat/sessions"),
+  getSessions: () => api.get("/api/ai/chat/sessions"),
+  deleteSession: (id) => api.delete(`/api/ai/chat/sessions/${id}`),
+  getMessages: (sessionId) => api.get(`/api/ai/chat/messages/${sessionId}`),
+  sendMessage: (sessionId, message) => api.post("/api/ai/chat/send", { session_id: sessionId, message }),
+};
