@@ -20,7 +20,7 @@ const PROMPTS = [
 
 /** Renders assistant text with basic markdown — bold, lists, line breaks. */
 function MdContent({ text }) {
-  const lines = text.split("\n");
+  const lines = String(text ?? "").split("\n");
   const nodes = [];
   let i = 0;
 
@@ -147,7 +147,10 @@ export default function AIChat() {
   }, [messages, loading]);
 
   async function loadSessions() {
-    try { setSessions((await chatAPI.getSessions()).data); } catch { setSessions([]); }
+    try {
+      const data = (await chatAPI.getSessions()).data;
+      setSessions(Array.isArray(data) ? data : []);
+    } catch { setSessions([]); }
   }
 
   async function newSession() {
@@ -183,7 +186,10 @@ export default function AIChat() {
 
   async function openSession(id) {
     setActiveId(id);
-    try { setMessages((await chatAPI.getMessages(id)).data); } catch { setMessages([]); }
+    try {
+      const data = (await chatAPI.getMessages(id)).data;
+      setMessages(Array.isArray(data) ? data : []);
+    } catch { setMessages([]); }
   }
 
   async function deleteSession(id, e) {
