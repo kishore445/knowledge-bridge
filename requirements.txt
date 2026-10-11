@@ -1,0 +1,3 @@
+# Lets Render build from the repo root; installs the backend as the "app" package.
+-r backend/requirements.txt
+./backend
