@@ -459,8 +459,11 @@ export default function AIChat() {
               <h1 style={{ fontSize: 26, fontWeight: 800, color: C.text, marginBottom: 8, letterSpacing: "-0.5px" }}>
                 Knowledge Bridge AI
               </h1>
+              <p style={{ color: C.blue, fontSize: 19, fontWeight: 700, fontStyle: "italic", marginBottom: 10, lineHeight: 1.45, maxWidth: 440 }}>
+                “The book gathering dust on your shelf is a classroom waiting for a child.”
+              </p>
               <p style={{ color: C.muted, fontSize: 14, marginBottom: 28, lineHeight: 1.7, maxWidth: 420 }}>
-                Ask about donating books, school orders, kabadiwala pickups, sponsorships, or anything about how Knowledge Bridge works.
+                One donated book can carry a child through a whole school year. Tell me what you have, and we’ll pick it up from your door.
               </p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", maxWidth: 540 }}>
                 {PROMPTS.map(p => (
